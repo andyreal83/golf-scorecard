@@ -1,0 +1,50 @@
+.rating-prompt__stars {
+  display: flex;
+  justify-content: center;
+  gap: var(--space-2);
+}
+
+.rating-prompt__star {
+  background: none;
+  border: none;
+  font-size: 44px;
+  line-height: 1;
+  color: var(--colour-border);
+  min-width: var(--tap-target);
+  min-height: var(--tap-target);
+}
+
+.rating-prompt__star--active {
+  color: #e0a300;
+}
+
+.rating-prompt__weather {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: center;
+  gap: var(--space-2);
+}
+
+.rating-prompt__weather-icon {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 2px;
+  background: var(--colour-surface);
+  border: 2px solid var(--colour-border);
+  border-radius: var(--radius);
+  padding: var(--space-2);
+  min-width: 60px;
+  font-size: 22px;
+}
+
+.rating-prompt__weather-icon--active {
+  border-color: var(--colour-primary);
+  background: #e4ede6;
+}
+
+.rating-prompt__weather-label {
+  font-size: 11px;
+  font-weight: 600;
+  color: var(--colour-muted);
+}

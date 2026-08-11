@@ -1,0 +1,43 @@
+.course-setup {
+  height: 100%;
+}
+
+.course-setup__header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+}
+
+.course-setup__header h1 {
+  margin: 0;
+  font-size: var(--font-size-large);
+}
+
+.course-setup__hint {
+  margin: 0;
+  color: var(--colour-muted);
+}
+
+.course-setup__list {
+  flex: 1;
+  min-height: 0;
+  overflow-y: auto;
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-2);
+}
+
+.course-setup__row {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  justify-content: center;
+  gap: var(--space-2) var(--space-4);
+}
+
+.course-setup__hole-number {
+  font-size: var(--font-size-large);
+  font-weight: 800;
+  min-width: 24px;
+  text-align: center;
+}

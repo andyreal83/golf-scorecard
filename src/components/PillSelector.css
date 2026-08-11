@@ -1,0 +1,56 @@
+.pill-selector {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-2);
+  align-items: center;
+}
+
+.pill-selector__label {
+  font-weight: 600;
+  color: var(--colour-muted);
+  text-transform: uppercase;
+  font-size: 14px;
+  letter-spacing: 0.04em;
+}
+
+.pill-selector__row {
+  display: flex;
+  gap: var(--space-2);
+}
+
+.pill-selector__pill {
+  min-width: 44px;
+  min-height: 44px;
+  border-radius: 50%;
+  border: 2px solid var(--colour-border);
+  background: var(--colour-surface);
+  font-size: 18px;
+  font-weight: 700;
+  color: var(--colour-text);
+}
+
+.pill-selector__pill--active {
+  background: var(--colour-primary);
+  border-color: var(--colour-primary);
+  color: var(--colour-primary-contrast);
+}
+
+.pill-selector__stepper {
+  display: flex;
+  align-items: center;
+  gap: var(--space-2);
+}
+
+.pill-selector__stepper .button {
+  min-width: 40px;
+  min-height: 40px;
+  padding: 0;
+  font-size: 18px;
+}
+
+.pill-selector__value {
+  font-size: 28px;
+  font-weight: 700;
+  min-width: 36px;
+  text-align: center;
+}

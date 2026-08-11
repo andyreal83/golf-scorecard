@@ -1,0 +1,19 @@
+.settings__header {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  justify-content: space-between;
+  gap: var(--space-2);
+}
+
+.settings__field {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-2);
+  font-weight: 600;
+}
+
+.settings__hint {
+  color: var(--colour-muted);
+  margin: 0;
+}

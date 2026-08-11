@@ -1,0 +1,59 @@
+.hole-entry {
+  touch-action: pan-y;
+}
+
+.hole-entry__header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+}
+
+.hole-entry__nav {
+  border-radius: 50%;
+  padding: 0;
+  font-size: 20px;
+}
+
+.hole-entry__title {
+  margin: 0;
+  font-size: var(--font-size-xl);
+}
+
+.hole-entry__selectors {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: center;
+  gap: var(--space-3) var(--space-4);
+}
+
+.hole-entry__players {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-2);
+  flex: 1;
+}
+
+.hole-entry__totals {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-1);
+}
+
+.hole-entry__totals-row {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  font-weight: 700;
+}
+
+.hole-entry__totals-name {
+  color: var(--colour-muted);
+  font-weight: 600;
+}
+
+.hole-entry__footer {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-2);
+  margin-top: auto;
+}

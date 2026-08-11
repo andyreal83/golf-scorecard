@@ -1,0 +1,149 @@
+.scorecard {
+  gap: var(--space-2);
+}
+
+.scorecard__header {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-2);
+}
+
+.scorecard__header h1 {
+  margin: 0;
+  font-size: var(--font-size-large);
+}
+
+.scorecard__header-actions {
+  display: flex;
+  flex-wrap: wrap;
+  gap: var(--space-2);
+}
+
+.scorecard__table-wrap {
+  border: 1px solid var(--colour-border);
+  border-radius: var(--radius);
+}
+
+.scorecard__table {
+  border-collapse: collapse;
+  width: 100%;
+  table-layout: fixed;
+}
+
+.scorecard__table th,
+.scorecard__table td {
+  padding: var(--space-1);
+  text-align: center;
+  border-bottom: 1px solid var(--colour-border);
+}
+
+.scorecard__table thead th {
+  background: var(--colour-surface);
+  font-size: 13px;
+  color: var(--colour-muted);
+}
+
+.scorecard__table td:first-child,
+.scorecard__table th:first-child {
+  font-weight: 700;
+}
+
+.scorecard__table th:nth-child(1),
+.scorecard__table td:nth-child(1),
+.scorecard__table th:nth-child(2),
+.scorecard__table td:nth-child(2),
+.scorecard__table th:nth-child(3),
+.scorecard__table td:nth-child(3) {
+  width: 13%;
+}
+
+.scorecard__score-cell {
+  display: table-cell;
+}
+
+.scorecard__hole-link {
+  background: none;
+  border: none;
+  font: inherit;
+  font-weight: inherit;
+  color: var(--colour-primary);
+  text-decoration: underline;
+  padding: var(--space-2);
+}
+
+.scorecard__score-line {
+  display: flex;
+  align-items: baseline;
+  justify-content: center;
+  gap: 4px;
+}
+
+.scorecard__gross {
+  display: block;
+  font-weight: 700;
+  font-size: var(--font-size-large);
+}
+
+.scorecard__hole-diff {
+  font-size: 12px;
+  font-weight: 700;
+}
+
+.scorecard__net {
+  display: block;
+  font-size: 12px;
+  color: var(--colour-muted);
+}
+
+.scorecard__block-row {
+  background: #dbe8de;
+  font-weight: 700;
+}
+
+.scorecard__block-row--grand {
+  background: #c3d9c8;
+}
+
+.scorecard__summary {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-2);
+}
+
+.scorecard__summary-row {
+  display: flex;
+  align-items: baseline;
+  gap: var(--space-2);
+}
+
+.scorecard__summary-row--notes {
+  flex-direction: column;
+  align-items: flex-start;
+  gap: var(--space-1);
+}
+
+.scorecard__summary-label {
+  font-weight: 600;
+  color: var(--colour-muted);
+  min-width: 70px;
+}
+
+.scorecard__summary-stars {
+  color: var(--colour-border);
+  font-size: 20px;
+}
+
+.scorecard__star--active {
+  color: #e0a300;
+}
+
+.scorecard__summary-weather {
+  display: flex;
+  gap: var(--space-2);
+  font-size: 22px;
+}
+
+.scorecard__summary-notes {
+  margin: 0;
+  white-space: pre-wrap;
+}

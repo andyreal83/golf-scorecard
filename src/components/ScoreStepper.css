@@ -1,0 +1,41 @@
+.score-stepper {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: var(--space-3);
+}
+
+.score-stepper__info {
+  display: flex;
+  flex-direction: column;
+}
+
+.score-stepper__name {
+  font-size: var(--font-size-large);
+  font-weight: 700;
+}
+
+.score-stepper__net-par {
+  color: var(--colour-muted);
+  font-size: 15px;
+}
+
+.score-stepper__controls {
+  display: flex;
+  align-items: center;
+  gap: var(--space-3);
+}
+
+.score-stepper__button {
+  border-radius: 50%;
+  padding: 0;
+  font-size: 28px;
+  line-height: 1;
+}
+
+.score-stepper__score {
+  font-size: var(--font-size-xxl);
+  font-weight: 800;
+  min-width: 56px;
+  text-align: center;
+}
