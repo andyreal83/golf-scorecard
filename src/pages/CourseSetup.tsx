@@ -12,7 +12,7 @@ const SI_OPTIONS = Array.from({ length: 18 }, (_, i) => i + 1)
 export default function CourseSetup() {
   const { id } = useParams()
   const navigate = useNavigate()
-  const { round, ensureHole, setPar, setStrokeIndex } = useActiveRound()
+  const { round, ensureHole, setPar, setStrokeIndex, setYards } = useActiveRound()
 
   useEffect(() => {
     if (!round) return
@@ -27,7 +27,7 @@ export default function CourseSetup() {
       <div className="screen">
         <p>No active round.</p>
         <button type="button" className="button button--primary" onClick={() => navigate('/')}>
-          Back home
+          Back Home
         </button>
       </div>
     )
@@ -38,7 +38,7 @@ export default function CourseSetup() {
   return (
     <div className="screen course-setup">
       <div className="course-setup__header">
-        <h1>Course setup</h1>
+        <h1>Course Setup</h1>
         <button type="button" className="button button--secondary" onClick={() => navigate(`/round/${id}/scorecard`)}>
           Done
         </button>
@@ -49,13 +49,24 @@ export default function CourseSetup() {
         {holes.map((h) => (
           <div key={h.number} className="course-setup__row card">
             <span className="course-setup__hole-number">{h.number}</span>
-            <PillSelector label="Par" value={h.par} options={PAR_OPTIONS} onChange={(v) => setPar(h.number, v)} />
+            <PillSelector small label="Par" value={h.par} options={PAR_OPTIONS} onChange={(v) => setPar(h.number, v)} />
             <PillSelector
+              small
               label="SI"
               value={h.strokeIndex}
               options={SI_OPTIONS}
               onChange={(v) => setStrokeIndex(h.number, v)}
             />
+            <label className="course-setup__yards">
+              <span className="course-setup__yards-label">Yds</span>
+              <input
+                type="number"
+                inputMode="numeric"
+                className="course-setup__yards-input"
+                value={h.yards ?? ''}
+                onChange={(e) => setYards(h.number, e.target.value ? Number(e.target.value) : undefined)}
+              />
+            </label>
           </div>
         ))}
       </div>

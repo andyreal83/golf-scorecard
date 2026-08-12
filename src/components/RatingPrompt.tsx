@@ -20,7 +20,7 @@ export default function RatingPrompt({ onSubmit }: RatingPromptProps) {
   return (
     <div className="confirm-dialog__backdrop" role="dialog" aria-modal="true">
       <div className="confirm-dialog card rating-prompt">
-        <h2 className="confirm-dialog__title">How was the round?</h2>
+        <h2 className="confirm-dialog__title">How Was the Round?</h2>
         <div className="rating-prompt__stars">
           {[1, 2, 3, 4, 5].map((n) => (
             <button
@@ -64,7 +64,7 @@ export default function RatingPrompt({ onSubmit }: RatingPromptProps) {
             disabled={rating === 0}
             onClick={() => onSubmit(rating, notes.trim(), weather)}
           >
-            End round
+            End Round
           </button>
         </div>
       </div>

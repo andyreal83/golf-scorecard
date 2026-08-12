@@ -1,0 +1,8 @@
+.star-rating {
+  color: var(--colour-border);
+  font-size: 20px;
+}
+
+.star-rating__star--active {
+  color: #e0a300;
+}

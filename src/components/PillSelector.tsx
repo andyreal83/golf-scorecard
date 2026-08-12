@@ -5,6 +5,8 @@ interface PillSelectorProps {
   value: number
   options: number[]
   onChange: (value: number) => void
+  /** Smaller controls for dense list contexts (Course Setup / Course Editor rows). */
+  small?: boolean
 }
 
 /**
@@ -13,15 +15,15 @@ interface PillSelectorProps {
  * the range is large (stroke index 1-18), since 18 pills won't fit legibly
  * on a phone screen.
  */
-export default function PillSelector({ label, value, options, onChange }: PillSelectorProps) {
-  const compact = options.length > 6
+export default function PillSelector({ label, value, options, onChange, small }: PillSelectorProps) {
+  const useStepper = options.length > 6
   const min = options[0]
   const max = options[options.length - 1]
 
   return (
-    <div className="pill-selector">
+    <div className={`pill-selector${small ? ' pill-selector--small' : ''}`}>
       <span className="pill-selector__label">{label}</span>
-      {compact ? (
+      {useStepper ? (
         <div className="pill-selector__stepper">
           <button
             type="button"

@@ -1,6 +1,7 @@
-import { useEffect, useState } from 'react'
+import { useEffect, useState, type ChangeEvent } from 'react'
 import { useNavigate, useParams } from 'react-router-dom'
 import { fetchCourses, newCourse, saveCourse } from '../lib/courses'
+import { resizeImageFile } from '../lib/image'
 import type { CourseHole, RoundFormat, SavedCourse } from '../lib/types'
 import PillSelector from '../components/PillSelector'
 import './CourseEditor.css'
@@ -54,6 +55,22 @@ export default function CourseEditor() {
     setCourse((c) => (c ? { ...c, format, holes: resizeHoles(c.holes, format) } : c))
   }
 
+  async function handleMapFile(e: ChangeEvent<HTMLInputElement>) {
+    const file = e.target.files?.[0]
+    e.target.value = ''
+    if (!file) return
+    const dataUrl = await resizeImageFile(file)
+    setCourse((c) => (c ? { ...c, mapImage: dataUrl } : c))
+  }
+
+  async function handleHoleMapFile(number: number, e: ChangeEvent<HTMLInputElement>) {
+    const file = e.target.files?.[0]
+    e.target.value = ''
+    if (!file) return
+    const dataUrl = await resizeImageFile(file)
+    updateHole(number, { mapImage: dataUrl })
+  }
+
   async function handleSave() {
     if (!course || !canSave) return
     await saveCourse({ ...course, name: course.name.trim(), updatedAt: new Date().toISOString() })
@@ -63,14 +80,14 @@ export default function CourseEditor() {
   return (
     <div className="screen course-editor">
       <div className="course-editor__header">
-        <h1>{isNew ? 'Add course' : 'Edit course'}</h1>
+        <h1>{isNew ? 'Add Course' : 'Edit Course'}</h1>
         <button type="button" className="button button--secondary" onClick={() => navigate(-1)}>
           Cancel
         </button>
       </div>
 
       <label className="course-editor__field">
-        <span>Course name</span>
+        <span>Course Name</span>
         <input
           type="text"
           value={course.name}
@@ -80,7 +97,7 @@ export default function CourseEditor() {
       </label>
 
       <div className="course-editor__field">
-        <span>Round format</span>
+        <span>Round Format</span>
         <div className="course-editor__format">
           {([9, 18] as const).map((f) => (
             <button
@@ -89,9 +106,28 @@ export default function CourseEditor() {
               className={`button ${course.format === f ? 'button--primary' : 'button--secondary'} button--block`}
               onClick={() => changeFormat(f)}
             >
-              {f} holes
+              {f} Holes
             </button>
           ))}
+        </div>
+      </div>
+
+      <div className="course-editor__field">
+        <span>Course Map</span>
+        {course.mapImage && (
+          <img src={course.mapImage} alt="Course map preview" className="course-editor__map-preview" />
+        )}
+        <div className="course-editor__map-actions">
+          <input type="file" accept="image/*" onChange={handleMapFile} />
+          {course.mapImage && (
+            <button
+              type="button"
+              className="button button--secondary"
+              onClick={() => setCourse((c) => (c ? { ...c, mapImage: undefined } : c))}
+            >
+              Remove Image
+            </button>
+          )}
         </div>
       </div>
 
@@ -99,19 +135,62 @@ export default function CourseEditor() {
         {course.holes.map((h) => (
           <div key={h.number} className="course-editor__row card">
             <span className="course-editor__hole-number">{h.number}</span>
-            <PillSelector label="Par" value={h.par} options={PAR_OPTIONS} onChange={(v) => updateHole(h.number, { par: v })} />
             <PillSelector
+              small
+              label="Par"
+              value={h.par}
+              options={PAR_OPTIONS}
+              onChange={(v) => updateHole(h.number, { par: v })}
+            />
+            <PillSelector
+              small
               label="SI"
               value={h.strokeIndex}
               options={SI_OPTIONS}
               onChange={(v) => updateHole(h.number, { strokeIndex: v })}
             />
+            <label className="course-editor__yards">
+              <span className="course-editor__yards-label">Yds</span>
+              <input
+                type="number"
+                inputMode="numeric"
+                className="course-editor__yards-input"
+                value={h.yards ?? ''}
+                onChange={(e) => updateHole(h.number, { yards: e.target.value ? Number(e.target.value) : undefined })}
+              />
+            </label>
+            <div className="course-editor__hole-map">
+              <span className="course-editor__yards-label">Map</span>
+              {h.mapImage ? (
+                <button
+                  type="button"
+                  className="course-editor__hole-map-remove"
+                  aria-label={`Remove map for hole ${h.number}`}
+                  onClick={() => updateHole(h.number, { mapImage: undefined })}
+                >
+                  ✕
+                </button>
+              ) : (
+                <>
+                  <input
+                    type="file"
+                    accept="image/*"
+                    id={`hole-map-${h.number}`}
+                    className="course-editor__hole-map-input"
+                    onChange={(e) => handleHoleMapFile(h.number, e)}
+                  />
+                  <label htmlFor={`hole-map-${h.number}`} className="course-editor__hole-map-upload" aria-label={`Add map for hole ${h.number}`}>
+                    📷
+                  </label>
+                </>
+              )}
+            </div>
           </div>
         ))}
       </div>
 
       <button type="button" className="button button--primary button--block" disabled={!canSave} onClick={handleSave}>
-        Save course
+        Save Course
       </button>
     </div>
   )

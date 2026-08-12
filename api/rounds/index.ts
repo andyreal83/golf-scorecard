@@ -15,7 +15,9 @@ export default async function handler(req: VercelRequest, res: VercelResponse) {
   const supabase = getSupabase()
   let query = supabase
     .from('rounds')
-    .select('id, status, course_name, started_at, player1_name, player1_score, player1_diff')
+    .select(
+      'id, status, course_name, format, started_at, rating, weather, player1_name, player1_score, player1_diff, player1_points',
+    )
     .order('started_at', { ascending: false })
 
   if (status === 'completed' || status === 'in_progress') {
@@ -32,10 +34,14 @@ export default async function handler(req: VercelRequest, res: VercelResponse) {
     id: row.id,
     status: row.status,
     courseName: row.course_name,
+    format: row.format,
     startedAt: row.started_at,
+    rating: row.rating,
+    weather: row.weather ?? [],
     player1Name: row.player1_name,
     player1Score: row.player1_score,
     player1Diff: row.player1_diff,
+    player1Points: row.player1_points,
   }))
 
   res.status(200).json(summaries)

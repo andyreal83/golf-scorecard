@@ -9,14 +9,19 @@ function summarise(round: Round): RoundSummary {
     .map((h) => (player1 ? h.scores[player1.id] : undefined))
     .filter((s): s is number => typeof s === 'number')
   const total = computeBlocks(round).total
+  const player1Total = player1 ? total?.perPlayer[player1.id] : undefined
   return {
     id: round.id,
     status: round.status,
     courseName: round.courseName,
+    format: round.format,
     startedAt: round.startedAt,
+    rating: round.rating,
+    weather: round.weather,
     player1Name: player1?.name ?? '',
     player1Score: scores.length ? scores.reduce((sum, s) => sum + s, 0) : null,
-    player1Diff: (player1 && total?.perPlayer[player1.id]?.diff) ?? null,
+    player1Diff: player1Total?.diff ?? null,
+    player1Points: player1Total && player1Total.holesPlayed > 0 ? player1Total.points : null,
   }
 }
 

@@ -34,12 +34,12 @@ export default function Settings() {
       </div>
 
       <label className="settings__field">
-        <span>Your name</span>
+        <span>Your Name</span>
         <input type="text" value={name} onChange={(e) => setName(e.target.value)} placeholder="Your name" />
       </label>
 
       <label className="settings__field">
-        <span>Your handicap</span>
+        <span>Your Handicap</span>
         <input
           type="number"
           inputMode="decimal"
@@ -56,7 +56,7 @@ export default function Settings() {
       </button>
 
       <button type="button" className="button button--secondary button--block" onClick={() => navigate('/courses')}>
-        Manage saved courses
+        Manage Saved Courses
       </button>
     </div>
   )

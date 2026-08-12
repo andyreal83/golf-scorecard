@@ -50,3 +50,11 @@ export function formatDiff(totalGross: number, totalNetPar: number): DiffLabel {
   if (diff === 0) return 'E'
   return diff > 0 ? (`+${diff}` as const) : (`-${Math.abs(diff)}` as const)
 }
+
+/**
+ * Stableford points for a single hole: 2 points for a net par, +1 for each
+ * shot better, -1 for each shot worse, floored at 0 (never negative).
+ */
+export function stablefordPoints(gross: number, netPar: number): number {
+  return Math.max(0, 2 - (gross - netPar))
+}

@@ -26,6 +26,7 @@ export default function StartRound() {
   const [courses, setCourses] = useState<SavedCourse[]>([])
   const [selectedCourseId, setSelectedCourseId] = useState('')
   const [selectedCourseHoles, setSelectedCourseHoles] = useState<CourseHole[] | null>(null)
+  const [selectedCourseMapImage, setSelectedCourseMapImage] = useState<string | undefined>(undefined)
   const nameInputRefs = useRef<Record<string, HTMLInputElement | null>>({})
   const focusNextId = useRef<string | null>(null)
 
@@ -73,8 +74,10 @@ export default function StartRound() {
       setCourseName(course.name)
       setFormat(course.format)
       setSelectedCourseHoles(course.holes)
+      setSelectedCourseMapImage(course.mapImage)
     } else {
       setSelectedCourseHoles(null)
+      setSelectedCourseMapImage(undefined)
     }
   }
 
@@ -82,6 +85,7 @@ export default function StartRound() {
     setFormat(f)
     setSelectedCourseId('')
     setSelectedCourseHoles(null)
+    setSelectedCourseMapImage(undefined)
   }
 
   async function handleStart() {
@@ -91,17 +95,23 @@ export default function StartRound() {
       name: p.name.trim(),
       handicap: Number(p.handicap) || 0,
     }))
-    const round = await startRound(courseName.trim(), format, finalPlayers, selectedCourseHoles ?? undefined)
+    const round = await startRound(
+      courseName.trim(),
+      format,
+      finalPlayers,
+      selectedCourseHoles ?? undefined,
+      selectedCourseMapImage,
+    )
     navigate(`/round/${round.id}/hole/1`)
   }
 
   return (
     <div className="screen">
-      <h1>Start a round</h1>
+      <h1>Start a Round</h1>
 
       {courses.length > 0 && (
         <label className="start-round__field">
-          <span>Saved course</span>
+          <span>Saved Course</span>
           <select value={selectedCourseId} onChange={(e) => selectSavedCourse(e.target.value)}>
             <option value="">Type a course name below…</option>
             {courses.map((c) => (
@@ -124,7 +134,7 @@ export default function StartRound() {
       </label>
 
       <div className="start-round__field">
-        <span>Round format</span>
+        <span>Round Format</span>
         <div className="start-round__format">
           {([9, 18] as const).map((f) => (
             <button
@@ -133,7 +143,7 @@ export default function StartRound() {
               className={`button ${format === f ? 'button--primary' : 'button--secondary'} button--block`}
               onClick={() => selectFormat(f)}
             >
-              {f} holes
+              {f} Holes
             </button>
           ))}
         </div>
@@ -175,13 +185,13 @@ export default function StartRound() {
         ))}
         {players.length < 4 && (
           <button type="button" className="button button--secondary button--block" onClick={addPlayer}>
-            Add player
+            Add Player
           </button>
         )}
       </div>
 
       <button type="button" className="button button--primary button--block" disabled={!canStart} onClick={handleStart}>
-        Start round
+        Start Round
       </button>
       <button type="button" className="button button--secondary button--block" onClick={() => navigate('/')}>
         Cancel

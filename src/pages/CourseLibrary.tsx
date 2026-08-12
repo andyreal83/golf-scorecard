@@ -24,7 +24,7 @@ export default function CourseLibrary() {
   return (
     <div className="screen">
       <div className="course-library__header">
-        <h1>Saved courses</h1>
+        <h1>Saved Courses</h1>
         <button type="button" className="button button--secondary" onClick={() => navigate(-1)}>
           Back
         </button>
@@ -40,8 +40,8 @@ export default function CourseLibrary() {
         {courses.map((c) => (
           <li key={c.id} className="course-library__item card">
             <button type="button" className="course-library__item-main" onClick={() => navigate(`/courses/${c.id}/edit`)}>
-              <span className="course-library__item-name">{c.name || 'Untitled course'}</span>
-              <span className="course-library__item-format">{c.format} holes</span>
+              <span className="course-library__item-name">{c.name || 'Untitled Course'}</span>
+              <span className="course-library__item-format">{c.format} Holes</span>
             </button>
             <button
               type="button"
@@ -56,13 +56,13 @@ export default function CourseLibrary() {
       </ul>
 
       <button type="button" className="button button--primary button--block" onClick={() => navigate('/courses/new')}>
-        Add course
+        Add Course
       </button>
 
       {pendingDelete && (
         <ConfirmDialog
-          title="Delete this course?"
-          body={`${pendingDelete.name || 'Untitled course'}. This can't be undone.`}
+          title="Delete This Course?"
+          body={`${pendingDelete.name || 'Untitled Course'}. This can't be undone.`}
           confirmLabel="Delete"
           danger
           onConfirm={confirmDelete}

@@ -1,5 +1,5 @@
 import { describe, expect, it } from 'vitest'
-import { computeBlocks, netParForHole } from './scoring'
+import { computeBlocks, netParForHole, firstIncompleteHoleNumber } from './scoring'
 import type { Hole, Round } from './types'
 
 function makeRound(overrides: Partial<Round> & { holes: Hole[] }): Round {
@@ -107,5 +107,61 @@ describe('18-hole stroke allocation (unchanged)', () => {
     })
     // SI 15 <= 34, and 34 wraps twice (34 - 18 - 18 < 0 after 2 passes... 34-18=16, 15<=16 -> 2nd stroke, 16-18<0 stop) = 2 strokes
     expect(netParForHole(round, 1, 'p1')).toBe(6)
+  })
+})
+
+describe('stableford points (via computeBlocks)', () => {
+  it('gives 2 points for a net par, 3 for a net birdie, 1 for a net bogey, 0 beyond that', () => {
+    const holes: Hole[] = [
+      { number: 1, par: 4, strokeIndex: 1, scores: { p1: 5 } }, // net par 5 (1 stroke), gross 5 -> net par -> 2 pts
+      { number: 2, par: 4, strokeIndex: 2, scores: { p1: 4 } }, // net par 5, gross 4 -> net birdie -> 3 pts
+      { number: 3, par: 4, strokeIndex: 3, scores: { p1: 6 } }, // net par 5, gross 6 -> net bogey -> 1 pt
+      { number: 4, par: 4, strokeIndex: 18, scores: { p1: 8 } }, // net par 4 (0 strokes), gross 8 -> way over -> 0 pts
+    ]
+    const round = makeRound({
+      format: 18,
+      players: [{ id: 'p1', name: 'Player 1', handicap: 18 }], // playing hcp 18, every hole gets 1 stroke
+      holes,
+    })
+    const { total } = computeBlocks(round)
+    expect(total?.perPlayer.p1.points).toBe(2 + 3 + 1 + 0)
+  })
+})
+
+describe('firstIncompleteHoleNumber', () => {
+  it('returns the first hole missing a score for any player', () => {
+    const round = makeRound({
+      format: 18,
+      players: [
+        { id: 'p1', name: 'P1', handicap: 0 },
+        { id: 'p2', name: 'P2', handicap: 0 },
+      ],
+      holes: [
+        { number: 1, par: 4, strokeIndex: 1, scores: { p1: 4, p2: 4 } },
+        { number: 2, par: 4, strokeIndex: 2, scores: { p1: 4 } }, // p2 hasn't scored yet
+      ],
+    })
+    expect(firstIncompleteHoleNumber(round)).toBe(2)
+  })
+
+  it('moves to the next hole once all existing holes are fully scored', () => {
+    const round = makeRound({
+      format: 18,
+      players: [{ id: 'p1', name: 'P1', handicap: 0 }],
+      holes: [
+        { number: 1, par: 4, strokeIndex: 1, scores: { p1: 4 } },
+        { number: 2, par: 4, strokeIndex: 2, scores: { p1: 4 } },
+      ],
+    })
+    expect(firstIncompleteHoleNumber(round)).toBe(3)
+  })
+
+  it('never exceeds the round format', () => {
+    const round = makeRound({
+      format: 9,
+      players: [{ id: 'p1', name: 'P1', handicap: 0 }],
+      holes: Array.from({ length: 9 }, (_, i) => ({ number: i + 1, par: 4, strokeIndex: i + 1, scores: { p1: 4 } })),
+    })
+    expect(firstIncompleteHoleNumber(round)).toBe(9)
   })
 })

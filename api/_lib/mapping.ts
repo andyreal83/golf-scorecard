@@ -12,6 +12,8 @@ export interface RoundRow {
   player1_name: string
   player1_score: number | null
   player1_diff: string | null
+  player1_points: number | null
+  weather: Round['weather'] | null
   data: { players: Round['players']; holes: Round['holes']; notes?: string; weather?: Round['weather'] }
   updated_at: string
 }
@@ -46,6 +48,13 @@ function player1Diff(round: Round): string | null {
   return computeBlocks(round).total?.perPlayer[player1.id]?.diff ?? null
 }
 
+function player1Points(round: Round): number | null {
+  const player1 = round.players[0]
+  if (!player1) return null
+  const total = computeBlocks(round).total?.perPlayer[player1.id]
+  return total && total.holesPlayed > 0 ? total.points : null
+}
+
 export function roundToRow(round: Round): RoundRow {
   return {
     id: round.id,
@@ -58,6 +67,8 @@ export function roundToRow(round: Round): RoundRow {
     player1_name: round.players[0]?.name ?? '',
     player1_score: player1GrossTotal(round),
     player1_diff: player1Diff(round),
+    player1_points: player1Points(round),
+    weather: round.weather,
     data: { players: round.players, holes: round.holes, notes: round.notes, weather: round.weather },
     updated_at: round.updatedAt,
   }

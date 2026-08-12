@@ -44,7 +44,7 @@
 .home__item-main {
   flex: 1;
   display: flex;
-  align-items: center;
+  align-items: flex-start;
   justify-content: space-between;
   gap: var(--space-3);
   background: none;
@@ -57,6 +57,7 @@
 .home__item-info {
   display: flex;
   flex-direction: column;
+  gap: 2px;
 }
 
 .home__item-course {
@@ -64,12 +65,19 @@
   font-size: var(--font-size-large);
 }
 
-.home__item-date {
+.home__item-meta {
   color: var(--colour-muted);
   font-size: 14px;
 }
 
 .home__item-score {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-end;
+  gap: 4px;
+}
+
+.home__item-score-row {
   display: flex;
   align-items: baseline;
   gap: var(--space-2);
@@ -80,11 +88,19 @@
   font-size: var(--font-size-large);
 }
 
-.home__item-delete {
-  background: none;
-  border: none;
-  color: var(--colour-danger);
+.home__item-points {
+  color: var(--colour-muted);
+  font-size: 13px;
   font-weight: 600;
-  min-height: var(--tap-target);
-  padding: 0 var(--space-2);
+}
+
+.home__item-extras {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  font-size: 15px;
+}
+
+.home__item-stars {
+  font-size: 13px;
 }

@@ -1,0 +1,26 @@
+.score-summary {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-1);
+}
+
+.score-summary__row {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: var(--space-2);
+  font-weight: 700;
+}
+
+.score-summary__name {
+  color: var(--colour-text);
+  font-weight: 600;
+  flex: 1;
+}
+
+.score-summary__points {
+  color: var(--colour-muted);
+  font-weight: 600;
+  min-width: 48px;
+  text-align: right;
+}

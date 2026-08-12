@@ -19,8 +19,6 @@
 }
 
 .course-editor__list {
-  flex: 1;
-  min-height: 0;
   display: flex;
   flex-direction: column;
   gap: var(--space-2);
@@ -31,12 +29,93 @@
   flex-wrap: wrap;
   align-items: center;
   justify-content: center;
-  gap: var(--space-2) var(--space-4);
+  gap: var(--space-2) var(--space-3);
 }
 
 .course-editor__hole-number {
   font-size: var(--font-size-large);
   font-weight: 800;
-  min-width: 24px;
+  min-width: 22px;
   text-align: center;
+}
+
+.course-editor__yards {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: var(--space-1);
+}
+
+.course-editor__yards-label {
+  font-weight: 600;
+  color: var(--colour-muted);
+  text-transform: uppercase;
+  font-size: 11px;
+  letter-spacing: 0.04em;
+}
+
+.course-editor__row input.course-editor__yards-input {
+  width: 64px;
+  min-height: 32px;
+  padding: var(--space-1);
+  font-size: 15px;
+  text-align: center;
+}
+
+.course-editor__map-preview {
+  width: 100%;
+  max-height: 220px;
+  object-fit: contain;
+  border: 1px solid var(--colour-border);
+  border-radius: var(--radius);
+  background: var(--colour-surface);
+}
+
+.course-editor__map-actions {
+  display: flex;
+  align-items: center;
+  gap: var(--space-2);
+  flex-wrap: wrap;
+}
+
+.course-editor__map-actions input[type='file'] {
+  flex: 1;
+  min-width: 0;
+  font-weight: 400;
+  font-size: 14px;
+}
+
+.course-editor__hole-map {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: var(--space-1);
+}
+
+.course-editor__hole-map-input {
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  overflow: hidden;
+  opacity: 0;
+}
+
+.course-editor__hole-map-upload,
+.course-editor__hole-map-remove {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 32px;
+  height: 32px;
+  border-radius: 50%;
+  border: 2px solid var(--colour-border);
+  background: var(--colour-surface);
+  font-size: 15px;
+  line-height: 1;
+}
+
+.course-editor__hole-map-remove {
+  border-color: var(--colour-danger);
+  color: var(--colour-danger);
+  font-weight: 700;
 }

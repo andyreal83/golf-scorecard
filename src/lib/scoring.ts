@@ -1,4 +1,4 @@
-import { playingHandicap, strokesReceived, netPar, formatDiff, type DiffLabel } from './handicap'
+import { playingHandicap, strokesReceived, netPar, formatDiff, stablefordPoints, type DiffLabel } from './handicap'
 import type { Hole, Round } from './types'
 
 export interface ScoreBlock {
@@ -6,7 +6,10 @@ export interface ScoreBlock {
   fromHole: number
   toHole: number
   parTotal: number
-  perPlayer: Record<string, { netParTotal: number; gross: number; holesPlayed: number; diff: DiffLabel | null }>
+  perPlayer: Record<
+    string,
+    { netParTotal: number; gross: number; holesPlayed: number; points: number; diff: DiffLabel | null }
+  >
 }
 
 /**
@@ -52,14 +55,23 @@ function buildBlock(round: Round, from: number, to: number, label: string): Scor
     let netParTotal = 0
     let gross = 0
     let holesPlayed = 0
+    let points = 0
     for (const h of slice) {
       const score = h.scores[p.id]
       if (score === undefined) continue
-      netParTotal += netPar(h.par, strokesForHole(round, h.number, hcp))
+      const holeNetPar = netPar(h.par, strokesForHole(round, h.number, hcp))
+      netParTotal += holeNetPar
       gross += score
+      points += stablefordPoints(score, holeNetPar)
       holesPlayed++
     }
-    perPlayer[p.id] = { netParTotal, gross, holesPlayed, diff: holesPlayed > 0 ? formatDiff(gross, netParTotal) : null }
+    perPlayer[p.id] = {
+      netParTotal,
+      gross,
+      holesPlayed,
+      points,
+      diff: holesPlayed > 0 ? formatDiff(gross, netParTotal) : null,
+    }
   }
   return { label, fromHole: from, toHole: to, parTotal, perPlayer }
 }
@@ -70,6 +82,8 @@ function buildBlock(round: Round, from: number, to: number, label: string): Scor
  * once it ends, so the total line under the 9-hole blocks always reflects
  * where things stand. Holes without a recorded score for a player don't
  * contribute to that player's gross/net-par totals (see diffForHole below).
+ * There are only ever two possible blocks — the front nine ("Out") and the
+ * back nine ("In"), standard golf terminology.
  */
 export function computeBlocks(round: Round): { subtotals: ScoreBlock[]; total: ScoreBlock | null } {
   const holeCount = round.holes.length
@@ -78,9 +92,9 @@ export function computeBlocks(round: Round): { subtotals: ScoreBlock[]; total: S
   for (let k = 1; k <= fullNines; k++) {
     const from = 9 * (k - 1) + 1
     const to = 9 * k
-    subtotals.push(buildBlock(round, from, to, `Holes ${from}-${to}`))
+    subtotals.push(buildBlock(round, from, to, k === 1 ? 'Out' : 'In'))
   }
-  const total = holeCount > 0 ? buildBlock(round, 1, holeCount, 'Round total') : null
+  const total = holeCount > 0 ? buildBlock(round, 1, holeCount, 'Total') : null
   return { subtotals, total }
 }
 
@@ -104,4 +118,23 @@ export function diffForHole(round: Round, holeNumber: number, playerId: string):
 /** Cumulative gross vs cumulative net par through (and including) a given hole, over holes actually scored so far. */
 export function cumulativeDiffThroughHole(round: Round, holeNumber: number, playerId: string): DiffLabel | null {
   return buildBlock(round, 1, holeNumber, 'through').perPlayer[playerId]?.diff ?? null
+}
+
+/** Cumulative Stableford points through (and including) a given hole, over holes actually scored so far. */
+export function cumulativePointsThroughHole(round: Round, holeNumber: number, playerId: string): number {
+  return buildBlock(round, 1, holeNumber, 'through').perPlayer[playerId]?.points ?? 0
+}
+
+/**
+ * The first hole (in order) that isn't yet fully scored for every player —
+ * used to resume a round exactly where it was left off, rather than always
+ * jumping to whichever hole happens to have been created last.
+ */
+export function firstIncompleteHoleNumber(round: Round): number {
+  const holes = [...round.holes].sort((a, b) => a.number - b.number)
+  for (const h of holes) {
+    const allScored = round.players.every((p) => h.scores[p.id] !== undefined)
+    if (!allScored) return h.number
+  }
+  return Math.min(holes.length + 1, round.format)
 }

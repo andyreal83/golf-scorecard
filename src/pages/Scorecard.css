@@ -15,8 +15,11 @@
 
 .scorecard__header-actions {
   display: flex;
-  flex-wrap: wrap;
   gap: var(--space-2);
+}
+
+.scorecard__header-actions .button {
+  flex: 1;
 }
 
 .scorecard__table-wrap {
@@ -126,15 +129,6 @@
   font-weight: 600;
   color: var(--colour-muted);
   min-width: 70px;
-}
-
-.scorecard__summary-stars {
-  color: var(--colour-border);
-  font-size: 20px;
-}
-
-.scorecard__star--active {
-  color: #e0a300;
 }
 
 .scorecard__summary-weather {

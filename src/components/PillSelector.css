@@ -54,3 +54,32 @@
   min-width: 36px;
   text-align: center;
 }
+
+.pill-selector--small .pill-selector__label {
+  font-size: 11px;
+}
+
+.pill-selector--small .pill-selector__row {
+  gap: var(--space-1);
+}
+
+.pill-selector--small .pill-selector__pill {
+  min-width: 32px;
+  min-height: 32px;
+  font-size: 13px;
+}
+
+.pill-selector--small .pill-selector__stepper {
+  gap: var(--space-1);
+}
+
+.pill-selector--small .pill-selector__stepper .button {
+  min-width: 28px;
+  min-height: 28px;
+  font-size: 14px;
+}
+
+.pill-selector--small .pill-selector__value {
+  font-size: 18px;
+  min-width: 22px;
+}

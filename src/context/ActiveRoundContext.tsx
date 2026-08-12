@@ -19,10 +19,17 @@ function makeHole(number: number): Hole {
 interface ActiveRoundContextValue {
   round: Round | null
   loading: boolean
-  startRound: (courseName: string, format: Format, players: Player[], courseHoles?: CourseHole[]) => Promise<Round>
+  startRound: (
+    courseName: string,
+    format: Format,
+    players: Player[],
+    courseHoles?: CourseHole[],
+    mapImage?: string,
+  ) => Promise<Round>
   ensureHole: (holeNumber: number) => void
   setPar: (holeNumber: number, par: number) => void
   setStrokeIndex: (holeNumber: number, si: number) => void
+  setYards: (holeNumber: number, yards: number | undefined) => void
   adjustScore: (holeNumber: number, playerId: string, delta: number) => void
   endRound: (rating: number, notes: string, weather: WeatherTag[]) => Promise<void>
   discardActiveRound: () => Promise<void>
@@ -64,10 +71,23 @@ export function ActiveRoundProvider({ children }: { children: ReactNode }) {
     scheduleSync(next)
   }
 
-  async function startRound(courseName: string, format: Format, players: Player[], courseHoles?: CourseHole[]) {
+  async function startRound(
+    courseName: string,
+    format: Format,
+    players: Player[],
+    courseHoles?: CourseHole[],
+    mapImage?: string,
+  ) {
     const holes: Hole[] =
       courseHoles && courseHoles.length > 0
-        ? courseHoles.map((h) => ({ number: h.number, par: h.par, strokeIndex: h.strokeIndex, scores: {} }))
+        ? courseHoles.map((h) => ({
+            number: h.number,
+            par: h.par,
+            strokeIndex: h.strokeIndex,
+            yards: h.yards,
+            mapImage: h.mapImage,
+            scores: {},
+          }))
         : [makeHole(1)]
     const round: Round = {
       id: makeId(),
@@ -81,6 +101,7 @@ export function ActiveRoundProvider({ children }: { children: ReactNode }) {
       weather: [],
       players,
       holes,
+      mapImage,
       updatedAt: nowIso(),
     }
     persist(round)
@@ -115,6 +136,13 @@ export function ActiveRoundProvider({ children }: { children: ReactNode }) {
     updateRound((r) => ({
       ...r,
       holes: r.holes.map((h) => (h.number === holeNumber ? { ...h, strokeIndex } : h)),
+    }))
+  }
+
+  function setYards(holeNumber: number, yards: number | undefined) {
+    updateRound((r) => ({
+      ...r,
+      holes: r.holes.map((h) => (h.number === holeNumber ? { ...h, yards } : h)),
     }))
   }
 
@@ -161,6 +189,7 @@ export function ActiveRoundProvider({ children }: { children: ReactNode }) {
       ensureHole,
       setPar,
       setStrokeIndex,
+      setYards,
       adjustScore,
       endRound,
       discardActiveRound,

@@ -1,13 +1,16 @@
 import { Fragment, useEffect, useState } from 'react'
 import { useNavigate, useParams } from 'react-router-dom'
 import { useActiveRound } from '../context/ActiveRoundContext'
-import { fetchCompletedRound } from '../lib/history'
-import { computeBlocks, netParForHole, diffForHole, type ScoreBlock } from '../lib/scoring'
+import { fetchCompletedRound, removeFromHistory } from '../lib/history'
+import { computeBlocks, netParForHole, diffForHole, firstIncompleteHoleNumber, type ScoreBlock } from '../lib/scoring'
 import { diffClassName, diffText } from '../lib/diffDisplay'
 import { formatDate } from '../lib/format'
 import { WEATHER_ICONS, WEATHER_LABELS } from '../lib/weather'
 import type { Round, WeatherTag } from '../lib/types'
 import RatingPrompt from '../components/RatingPrompt'
+import ScoreSummary from '../components/ScoreSummary'
+import StarRating from '../components/StarRating'
+import ConfirmDialog from '../components/ConfirmDialog'
 import './Scorecard.css'
 
 function DiffCell({ diff, className = '' }: { diff: ScoreBlock['perPlayer'][string]['diff']; className?: string }) {
@@ -24,13 +27,7 @@ function RoundSummaryCard({ round }: { round: Round }) {
       {round.rating !== null && (
         <div className="scorecard__summary-row">
           <span className="scorecard__summary-label">Rating</span>
-          <span className="scorecard__summary-stars">
-            {[1, 2, 3, 4, 5].map((n) => (
-              <span key={n} className={n <= round.rating! ? 'scorecard__star--active' : 'scorecard__star'}>
-                ★
-              </span>
-            ))}
-          </span>
+          <StarRating rating={round.rating} />
         </div>
       )}
       {round.weather.length > 0 && (
@@ -61,6 +58,7 @@ export default function Scorecard() {
   const { round: activeRound, endRound } = useActiveRound()
   const [readOnlyRound, setReadOnlyRound] = useState<Round | null>(null)
   const [showRating, setShowRating] = useState(false)
+  const [confirmingDelete, setConfirmingDelete] = useState(false)
 
   const isLive = !!activeRound && activeRound.id === id
   const round = isLive ? activeRound : readOnlyRound
@@ -87,6 +85,13 @@ export default function Scorecard() {
     navigate('/')
   }
 
+  async function handleDeleteRound() {
+    if (!id) return
+    await removeFromHistory(id)
+    setConfirmingDelete(false)
+    navigate('/')
+  }
+
   return (
     <div className="screen scorecard">
       <div className="scorecard__header">
@@ -94,26 +99,20 @@ export default function Scorecard() {
         <div className="scorecard__header-actions">
           {isLive && (
             <>
-              <button type="button" className="button button--secondary" onClick={() => navigate(`/round/${id}/setup`)}>
-                Course setup
-              </button>
               <button
                 type="button"
                 className="button button--secondary"
-                onClick={() => navigate(`/round/${id}/hole/${holes.at(-1)?.number ?? 1}`)}
+                onClick={() => navigate(`/round/${id}/hole/${firstIncompleteHoleNumber(round)}`)}
               >
-                Back to hole entry
+                Back to Hole
+              </button>
+              <button type="button" className="button button--secondary" onClick={() => navigate(`/round/${id}/setup`)}>
+                Course Setup
               </button>
             </>
           )}
         </div>
       </div>
-
-      {isLive && (
-        <button type="button" className="button button--primary button--block" onClick={() => setShowRating(true)}>
-          End round
-        </button>
-      )}
 
       {!isLive && <RoundSummaryCard round={round} />}
 
@@ -203,7 +202,43 @@ export default function Scorecard() {
         </table>
       </div>
 
+      <ScoreSummary
+        rows={round.players.map((p) => ({
+          playerId: p.id,
+          name: p.name,
+          diff: total?.perPlayer[p.id]?.diff ?? null,
+          points: total?.perPlayer[p.id]?.points ?? 0,
+        }))}
+      />
+
+      {isLive && (
+        <button type="button" className="button button--primary button--block" onClick={() => setShowRating(true)}>
+          End Round
+        </button>
+      )}
+
+      {!isLive && (
+        <button
+          type="button"
+          className="button button--danger button--block"
+          onClick={() => setConfirmingDelete(true)}
+        >
+          Delete Round
+        </button>
+      )}
+
       {showRating && <RatingPrompt onSubmit={handleEndRound} />}
+
+      {confirmingDelete && (
+        <ConfirmDialog
+          title="Delete This Round?"
+          body={`${round.courseName} — ${formatDate(round.startedAt)}. This can't be undone.`}
+          confirmLabel="Delete"
+          danger
+          onConfirm={handleDeleteRound}
+          onCancel={() => setConfirmingDelete(false)}
+        />
+      )}
     </div>
   )
 }

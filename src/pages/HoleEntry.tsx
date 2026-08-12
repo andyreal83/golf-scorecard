@@ -1,10 +1,12 @@
-import { useEffect } from 'react'
+import { useEffect, useState } from 'react'
 import { useNavigate, useParams } from 'react-router-dom'
 import { useActiveRound } from '../context/ActiveRoundContext'
-import { cumulativeDiffThroughHole, netParForHole } from '../lib/scoring'
-import { diffClassName, diffText } from '../lib/diffDisplay'
+import { cumulativeDiffThroughHole, cumulativePointsThroughHole, diffForHole, netParForHole } from '../lib/scoring'
 import PillSelector from '../components/PillSelector'
 import ScoreStepper from '../components/ScoreStepper'
+import ScoreSummary from '../components/ScoreSummary'
+import GolfBallIcon from '../components/GolfBallIcon'
+import CourseMapModal from '../components/CourseMapModal'
 import { useSwipe } from '../lib/useSwipe'
 import './HoleEntry.css'
 
@@ -18,6 +20,7 @@ export default function HoleEntry() {
   const holeNumber = Number(n)
   const navigate = useNavigate()
   const { round, ensureHole, setPar, setStrokeIndex, adjustScore } = useActiveRound()
+  const [showMap, setShowMap] = useState(false)
 
   useEffect(() => {
     if (round && !round.holes.some((h) => h.number === holeNumber)) {
@@ -38,7 +41,7 @@ export default function HoleEntry() {
       <div className="screen">
         <p>No active round.</p>
         <button type="button" className="button button--primary" onClick={() => navigate('/')}>
-          Back home
+          Back Home
         </button>
       </div>
     )
@@ -53,6 +56,9 @@ export default function HoleEntry() {
     )
   }
 
+  // A hole's own map takes priority; otherwise fall back to the round's overall map.
+  const mapImage = hole.mapImage ?? round.mapImage
+
   return (
     <div className="screen hole-entry" {...swipeHandlers}>
       <div className="hole-entry__header">
@@ -65,7 +71,16 @@ export default function HoleEntry() {
         >
           ◀
         </button>
-        <h1 className="hole-entry__title">Hole {holeNumber}</h1>
+        <div className="hole-entry__title-block">
+          <h1 className="hole-entry__title" aria-label={`Hole ${holeNumber}`}>
+            <span aria-hidden="true">⛳</span> {holeNumber}
+          </h1>
+          {!!hole.yards && (
+            <span className="hole-entry__yards">
+              <GolfBallIcon /> {hole.yards} yds
+            </span>
+          )}
+        </div>
         <button
           type="button"
           className="button button--secondary hole-entry__nav"
@@ -79,12 +94,7 @@ export default function HoleEntry() {
 
       <div className="hole-entry__selectors">
         <PillSelector label="Par" value={hole.par} options={PAR_OPTIONS} onChange={(v) => setPar(holeNumber, v)} />
-        <PillSelector
-          label="Stroke index"
-          value={hole.strokeIndex}
-          options={SI_OPTIONS}
-          onChange={(v) => setStrokeIndex(holeNumber, v)}
-        />
+        <PillSelector label="SI" value={hole.strokeIndex} options={SI_OPTIONS} onChange={(v) => setStrokeIndex(holeNumber, v)} />
       </div>
 
       <div className="hole-entry__players">
@@ -94,28 +104,35 @@ export default function HoleEntry() {
             playerName={p.name}
             netPar={netParForHole(round, holeNumber, p.id)}
             score={hole.scores[p.id]}
+            diff={diffForHole(round, holeNumber, p.id)}
             onChange={(delta) => adjustScore(holeNumber, p.id, delta)}
           />
         ))}
       </div>
 
-      <div className="hole-entry__totals card">
-        {round.players.map((p) => {
-          const diff = cumulativeDiffThroughHole(round, holeNumber, p.id)
-          return (
-            <div key={p.id} className="hole-entry__totals-row">
-              <span className="hole-entry__totals-name">{p.name}</span>
-              <span className={diffClassName(diff)}>{diffText(diff)}</span>
-            </div>
-          )
-        })}
-      </div>
+      <ScoreSummary
+        rows={round.players.map((p) => ({
+          playerId: p.id,
+          name: p.name,
+          diff: cumulativeDiffThroughHole(round, holeNumber, p.id),
+          points: cumulativePointsThroughHole(round, holeNumber, p.id),
+        }))}
+      />
 
       <div className="hole-entry__footer">
-        <button type="button" className="button button--secondary button--block" onClick={() => navigate(`/round/${id}/scorecard`)}>
-          Scorecard
-        </button>
+        <div className="hole-entry__footer-row">
+          <button type="button" className="button button--secondary" onClick={() => navigate(`/round/${id}/scorecard`)}>
+            Scorecard
+          </button>
+          {!!mapImage && (
+            <button type="button" className="button button--secondary" onClick={() => setShowMap(true)}>
+              Course Map
+            </button>
+          )}
+        </div>
       </div>
+
+      {showMap && mapImage && <CourseMapModal src={mapImage} onClose={() => setShowMap(false)} />}
     </div>
   )
 }

@@ -12,19 +12,26 @@ create table if not exists rounds (
   player1_name text not null,
   player1_score int,
   player1_diff text,
+  player1_points int,
+  weather jsonb,
   data jsonb not null,
   updated_at timestamptz not null default now()
 );
 
 alter table rounds add column if not exists player1_diff text;
+alter table rounds add column if not exists player1_points int;
+alter table rounds add column if not exists weather jsonb;
 
 create table if not exists courses (
   id uuid primary key,
   name text not null,
   format smallint not null check (format in (9, 18)),
   holes jsonb not null,
+  map_image text,
   updated_at timestamptz not null default now()
 );
+
+alter table courses add column if not exists map_image text;
 
 -- Single-row table holding the app owner's default name/handicap, used to
 -- prefill Player 1 when starting a round.

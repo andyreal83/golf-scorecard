@@ -32,14 +32,19 @@ export function mockApiPlugin(secret: string): Plugin {
   function summariseRound(r: any) {
     const player1 = r.players[0]
     const total = player1 ? computeBlocks(r).total : null
+    const player1Total = player1 ? total?.perPlayer[player1.id] : undefined
     return {
       id: r.id,
       status: r.status,
       courseName: r.courseName,
+      format: r.format,
       startedAt: r.startedAt,
+      rating: r.rating ?? null,
+      weather: r.weather ?? [],
       player1Name: player1?.name ?? '',
-      player1Score: total && total.perPlayer[player1.id]?.holesPlayed > 0 ? total.perPlayer[player1.id].gross : null,
-      player1Diff: total?.perPlayer[player1?.id]?.diff ?? null,
+      player1Score: player1Total && player1Total.holesPlayed > 0 ? player1Total.gross : null,
+      player1Diff: player1Total?.diff ?? null,
+      player1Points: player1Total && player1Total.holesPlayed > 0 ? player1Total.points : null,
     }
   }
 
